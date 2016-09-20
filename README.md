@@ -1,6 +1,7 @@
 # STOPKY
 
- ```./stopky.exported -h
+ ```
+ ./stopky.exported -h
 ----------------------------------------------------
   -v|--version         ... print version
   --update-version     ... change the file version to now 
@@ -20,4 +21,6 @@
 
 ## howto export with bashmagick
 
-```./stopky.exported --update-version; ./stopky.exported --export; cp ./stopky.exported.exported ~/```
+```
+./stopky.exported --update-version; ./stopky.exported --export; cp ./stopky.exported.exported ~/
+```
