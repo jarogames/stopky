@@ -1,0 +1,166 @@
+#!/bin/bash
+### including perlexport.pl PERL CODE##################################
+
+function perlexport_pl {
+perl - $1 $2 $3 $4 $5 $6 $7 $8 $9<< 'EOF'
+#!/usr/bin/env perl
+$INITPERL="#!/usr/bin/env perl";
+
+
+$OUT="$ARGV[0].exported";
+$PLFUNC=0;
+
+open IN,"$ARGV[0]";
+while ($line=<IN>){
+ if (  $line!~/^\s*#/ ){
+  if( $line=~/^\s*perl /){
+      ($what)=($line=~/^\s*perl\s+(.+?)\s/);
+      ($xxx,$params)=($line=~/^\s*perl\s+(.+?)\s+(.+)/);
+      $whatF=$what;
+      $whatF=~s/\./_/;  # remove .pl
+      $perlfunc{$what}="### including $what PERL CODE##################################\n
+function $whatF {
+perl - \$1 \$2 \$3 \$4 \$5 \$6 \$7 \$8 \$9<< 'EOF'
+$INITPERL\n";
+      open SRC,"$what"; while (<SRC>){if ($_!~/^#/){$perlfunc{$what}.=$_;}}close SRC;
+      $perlfunc{$what}.="\nEOF\n}\n";
+      $perlfunc{$what}.="### end of include $what PERL CODE#############################\n\n";
+   }
+ }
+} #while
+close IN;
+
+$LNUM=0;
+open IN,"$ARGV[0]";
+open OUT,">$OUT";
+while ($line=<IN>){
+    $LNUM+=1;
+ if (  $line!~/^\s*#/ ){
+   if ( $line=~/^\s*source /){
+    ($what)=($line=~/^\s*source\s+(.+)/);
+    print OUT "### including $what ##################################\n";
+    open SRC,"$what"; while (<SRC>){if ($_!~/^#/){print OUT;}}close SRC;
+    print OUT "### end of include $what #############################\n\n";
+   }elsif( $line=~/^\s*perl /){
+      ($what)=($line=~/^\s*perl\s+(.+?)\s/);
+      ($xxx,$params)=($line=~/^\s*perl\s+(.+?)\s+(.+)/);
+      $whatF=$what;
+      $whatF=~s/\./_/;  # remove .pl
+
+      print OUT "###        call of $what CODE#############################\n";
+      print OUT "$whatF $params\n";
+      print OUT "### end of call of $what CODE#############################\n";
+      $PLFUNC=$PLFUNC+1;
+   }else{
+    print OUT $line;
+   }
+ }else{
+  print OUT "$line";
+  if ($LNUM==1){foreach $j (keys %perlfunc){print OUT $perlfunc{$j};} }
+ }
+} #while
+close IN;
+close OUT;
+print `chmod +x $OUT; ls -l $OUT`;
+
+EOF
+}
+### end of include perlexport.pl PERL CODE#############################
+
+### including showoptions.pl PERL CODE##################################
+
+function showoptions_pl {
+perl - $1 $2 $3 $4 $5 $6 $7 $8 $9<< 'EOF'
+#!/usr/bin/env perl
+
+$IN="$ARGV[0]";
+open IN,"$IN";
+print "----------------------------------------------------\n";
+while (<IN>){
+    if ( (/case .+ in/) || (/;;/) ){
+ 	do {$a=<IN>; chop($a);}until(  ($a=~/esac/)||($a=~/\)/) );
+	if ( ($a!~/esac/)  &&  ($a!~/\s*\*/) ){
+	($opt,$comment)=($a=~/(.+)\s+#\s+(.+)/);
+	$opt=~s/^\s+//;
+	$opt=~s/\)//;
+	printf "  %-20s ... %s\n",$opt,$comment;
+	} # no # means no comment
+    }
+    if (/esac/){break;}
+}
+close IN;
+
+EOF
+}
+### end of include showoptions.pl PERL CODE#############################
+
+#
+VERSION=1507.29.17
+
+### including bashmagic.func ##################################
+
+function bm_update_version {
+ NEWVER=`date +%y%m.%d.%H`
+ echo AHOJ new version is $NEWVER
+ grep "VERSION=" $0
+ sed -i "s/^VERSION=.*/VERSION=$NEWVER/" $0
+ grep "VERSION=" $0
+}
+
+
+
+function bm_export_script {
+ echo perl script needed here...
+}
+
+
+### end of include bashmagic.func #############################
+
+# prerequisite 
+
+
+while [[ $# > 0 ]]
+do
+
+key="$1"
+shift
+
+case $key in
+    -v|--version)   # print version
+    echo version $VERSION
+  ;;
+    --update-version)  #  change the file version to now 
+       bm_update_version
+  ;;
+    -h|--help)  # help
+	# important to have an inline comment for every option!
+###        call of showoptions.pl CODE#############################
+showoptions_pl $0 
+### end of call of showoptions.pl CODE#############################
+	echo "-----------------------------------------------------"
+	echo "$0 --update_version; $0 --export; cp $0.exported ~/"
+  ;;
+
+    --export) #  join all files into one script
+    echo "% created by $0 ...ver.$VERSION"
+###        call of perlexport.pl CODE#############################
+perlexport_pl $0
+### end of call of perlexport.pl CODE#############################
+   ;;
+
+    -t) # test
+    echo TEST
+   ;;
+
+   *)            # unknown option
+	echo unknown option : $key
+	
+   ;;
+esac
+done
+
+
+if [[ -e $key ]]; then
+    echo "Last line of file specified as non-opt/last argument:"
+    tail -1 $key
+fi

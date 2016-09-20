@@ -1,0 +1,389 @@
+#!/bin/bash
+#
+VERSION=1509.21.16
+
+########  PIDS
+alarm=99999;
+main=99999;
+
+wakeat=9876543210
+
+
+source bashmagic.func
+# prerequisite 
+# backup
+
+
+#########################################
+#
+#  debian
+#
+ALARM=" /usr/share/sounds/KDE-Im-Phone-Ring.ogg";
+ALARM_SHORT="/usr/share/sounds/KDE_Beep_Pop.wav";
+##################################################
+function alarm {
+    wakeat=$1
+    echo alarm SET to $wakeat s 
+#    sleep 1
+    while : ; do
+	now=`date +%s`
+#	echo now = $now wake =$wakeat
+	if [ "$wakeat" -lt "$now" ]; then
+	    echo ALARM
+	    xset s off 2>/dev/null
+	    xset s reset 2>/dev/null
+	    xset noblank 2>/dev/null
+	    amixer sset Master playback 100 >/dev/null
+	    SNDS=(`ls -Sr1d /usr/share/sounds/* | tail -10`)
+	    RND=$(( ( RANDOM % 10 )   ))
+	    echo  playing $RND ...   ${SNDS[$RND]}
+	    mplayer -really-quiet ${SNDS[$RND]} 2>/dev/null
+##	    mplayer -really-quiet $ALARM 2>/dev/null
+	    sleep 5
+#####	    kill $main
+	fi
+	sleep 1
+    done & 2>/dev/null
+}
+
+##################################################
+function watches {
+    echo watches start
+    while : ; do
+	
+	
+	ht=`date +%H`
+	mt=`date +%M`
+	st=`date +%S`
+############
+	clear;
+
+	echo -e  "\e[1;33m"
+	# bold
+	echo -e  "\e[1;33m"
+# bg 	echo -e  "\e[1;41m"
+	#echo -e "\\033[33m"
+
+	DIFA=999999
+	if [ "$alarm" != "99999" ]; then
+	    secnow=`date +%s`
+	    DIFA=$(( $wakeat - $secnow ))
+#	    printf "alarm trigs in $dif sec\n"
+	fi
+
+#	ht=`date +%H`
+#	echo $ht $mt $st
+#	printf "%s\n" $ht
+	printf "%s:%s:%s A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
+	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	sleep 1;
+	
+
+done 2>/dev/null & 
+	
+}
+
+#########################################################
+
+function stopky {
+    echo stopky start
+#    start=`date +%s`;
+    start=$1
+    dstot=`expr $predstart - $stop`; 
+    DELTA=0;
+
+    while : ; do
+	
+	stop=`date +%s`; 
+	
+	dstot=`expr $stop - $start`; 
+	#ds=`expr $stop - $start`; 
+	ds=`expr $dstot - $DELTA`;
+	
+	m=`expr $ds / 60`; 
+	m=`expr $m % 60`;
+	h=`expr $ds / 3600`; 
+	s=`expr $ds % 60`;
+	
+	mt=`expr $dstot / 60`; 
+	mt=`expr $mt % 60`;
+	ht=`expr $dstot / 3600`; 
+	st=`expr $dstot % 60`;
+	clear;
+	echo -e  "\e[1;35m"
+
+	DIFA=999999
+	if [ "$alarm" != "99999" ]; then
+	    secnow=`date +%s`
+	    DIFA=$(( $wakeat - $secnow ))
+#	    printf "alarm trigs in $dif sec\n"
+	fi
+	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
+
+
+	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	sleep 1;
+	
+
+done 2>/dev/null & 
+	
+}
+
+
+##########################################
+
+function anykey() {
+    stty cbreak -echo
+    KEY=`dd bs=1 count=1 2>/dev/null`
+    stty -cbreak echo
+#    echo \(anykey\) pressed key was $KEY
+    if [ "$KEY" == " " ]; then
+#     echo SPACE
+     return 1
+    fi
+  return 0
+}
+
+########################################
+function countdown {
+
+    echo countdown start
+    ds=$1
+
+    while : ; do
+	
+	stop=`date +%s`; 
+	
+#	dstot=`expr $stop - $start`; 
+#	#ds=`expr $stop - $start`; 
+	ds=$(( $ds -1  ));
+	
+	if [ "$ds" -gt "0" ]; then
+	    m=`expr $ds / 60`; 
+	    m=`expr $m % 60`;
+	    h=`expr $ds / 3600`; 
+	    s=`expr $ds % 60`;
+	else
+	    m=$(( - $ds / 60 )); 
+	    m=$((  $m % 60 ));
+	    h=$(( - $ds / 3600 )); 
+	    s=$((  - $ds % 60 )) ;
+	fi
+	
+#	mt=`expr $dstot / 60`; 
+#	mt=`expr $mt % 60`;
+#	ht=`expr $dstot / 3600`; 
+#	st=`expr $dstot % 60`;
+	clear;
+
+	if [ "$ds" -gt "0" ]; then
+	    echo -e  "\e[1;36m"
+	else
+#	    ds=$(( $ds + 2  ));
+	    echo -e  "\e[1;32m"
+	    echo -e  "\e[7;31m"
+	fi	    
+
+	DIFA=999999
+	if [ "$alarm" != "99999" ]; then
+	    secnow=`date +%s`
+	    DIFA=$(( $wakeat - $secnow ))
+#	    printf "alarm trigs in $dif sec\n"
+	fi
+	
+	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $h $m $s ;
+#	printf "%02d:%02d:%02d   press SPACE to delay, x to read, q to exit, NOT ctrl-c\n"  $ht $mt $st ;
+
+	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	sleep 1;
+	
+
+done 2>/dev/null & 
+
+##	countd2=`perl -e '$a=$ARGV[0];($h,$m,$s)=($a=~/(\d+)\:(\d+)\:(\d+)/);print 3600*$h+60*$m+$s;'  $countd  `;
+#	if [ "$countd2" -eq "0" ]; then 
+#	    countd2=`perl -e '$a=$ARGV[0];($m,$s)=($a=~/(\d+)\:(\d+)/);print 3600*$h+60*$m+$s;'  $countd  `;
+#	fi
+
+ 
+}
+
+
+
+
+
+#########################################
+
+
+while [[ $# > 0 ]]
+do
+
+key="$1"
+shift
+
+case $key in
+    -v|--version)   # print version
+    echo $VERSION
+  ;;
+    --update-version)  #  change the file version to now 
+       bm_update_version
+  ;;
+    -h|--help)  # help
+	# important to have an inline comment for every option!
+	perl showoptions.pl $0
+	echo " $0  -a  10     -w      ... alarm in 10 seconds, watches mode"
+	echo " $0  -a  6:35   -w      ... alarm at next 6:35,  watches mode"
+	echo " $0  -a  6:35   -c      ... alarm at next 6:35, countdown"
+	echo " $0  -a  6:35   -c      ... alarm at next 6:35, timer"
+	echo "                  in -c mode space removes alarm sound"
+	echo "-----------------------------------------------------"
+	echo "$0 --update-version; $0 --export; cp $0.exported ~/"
+  ;;
+
+    --export) #  join all files into one script
+    echo "% created by $0 ...ver.$VERSION"
+    perl perlexport.pl $0
+   ;;
+
+    
+    -s) # time measurement START
+	ex=0
+	start=`date +%s`;
+	delay1=0
+	delay2=0
+	while [ "$ex" = 0 ];do
+	    start=$(( $start + $delay2 - $delay1 ))
+	    stopky $start 
+ 	    main=$!
+	    anykey
+	    delay1=`date +%s`;
+	    kill $main 
+	    if [ "$KEY" = " " ];then
+		echo keypress  SPACE...press SPACE again
+		# here devnul helped with no list text
+		anykey 2>/dev/null
+		delay2=`date +%s`;
+	    fi
+	    if [ "$KEY" = "q" ];then
+		echo keypress was q
+		break 
+	    fi
+	done
+	kill $alarm 2>/dev/null
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	exit
+	;;
+
+
+    -c) # countdown time or seconds
+	ex=0
+	delay1=0
+	delay2=0
+	while [ "$ex" = 0 ];do
+	    countdown $alarmtime
+ 	    main=$!
+	    delay1=`date +%s`;
+	    anykey
+	    kill $main 
+	    if [ "$KEY" = " " ];then
+		echo keypress  SPACE...press SPACE again
+		# here devnul helped with no list text
+		delay2=`date +%s`;
+		alarmtime=$(( $alarmtime + $delay1 - $delay2 ))
+	kill $alarm 2>/dev/null
+		anykey 2>/dev/null
+	    fi
+	    if [ "$KEY" = "q" ];then
+		echo keypress was q
+		break 
+	    fi
+	done
+	kill $alarm 2>/dev/null
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	exit
+	;;
+
+
+    -w) # see watch
+       watches	
+	main=$!
+
+	anykey 2>/dev/null
+#	echo killing main
+	kill $main 
+#	echo killing alarm
+	kill $alarm 2>/dev/null
+	echo killed all
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	echo "================================================="
+	exit
+   ;;
+
+    -a) # set alarm
+	alarmtime=$1
+	shift
+	secnow=`date +%s`
+	echo $alarmtime | grep ":"
+	if [ "$?" = "0" ]; then
+	    echo DECODE TIME $alarmtime
+	    ala2=`date -d $alarmtime +%s`
+	    alarmtime=$(( $ala2 - $secnow ))
+	    if [ "$alarmtime" -lt "0" ]; then
+		alarmtime=$(( $alarmtime + 86400 ))
+	    fi
+	fi
+	
+	wakeat=$(( $secnow + $alarmtime ))
+
+	alarm $wakeat
+
+	alarm=$!
+   ;;
+
+   *)            # unknown option
+	echo unknown option : $key
+	
+   ;;
+esac
+done
+
+
+if [[ -e $key ]]; then
+    echo "Last line of file specified as non-opt/last argument:"
+    tail -1 $key
+fi
