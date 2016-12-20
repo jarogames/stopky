@@ -1,31 +1,4 @@
 #!/bin/bash
-### including showoptions.pl PERL CODE##################################
-
-function showoptions_pl {
-perl - $1 $2 $3 $4 $5 $6 $7 $8 $9<< 'EOF'
-#!/usr/bin/env perl
-
-$IN="$ARGV[0]";
-open IN,"$IN";
-print "----------------------------------------------------\n";
-while (<IN>){
-    if ( (/case .+ in/) || (/;;/) ){
- 	do {$a=<IN>; chop($a);}until(  ($a=~/esac/)||($a=~/\)/) );
-	if ( ($a!~/esac/)  &&  ($a!~/\s*\*/) ){
-	($opt,$comment)=($a=~/(.+)\s+#\s+(.+)/);
-	$opt=~s/^\s+//;
-	$opt=~s/\)//;
-	printf "  %-20s ... %s\n",$opt,$comment;
-	} # no # means no comment
-    }
-    if (/esac/){break;}
-}
-close IN;
-
-EOF
-}
-### end of include showoptions.pl PERL CODE#############################
-
 ### including perlexport.pl PERL CODE##################################
 
 function perlexport_pl {
@@ -94,8 +67,35 @@ EOF
 }
 ### end of include perlexport.pl PERL CODE#############################
 
+### including showoptions.pl PERL CODE##################################
+
+function showoptions_pl {
+perl - $1 $2 $3 $4 $5 $6 $7 $8 $9<< 'EOF'
+#!/usr/bin/env perl
+
+$IN="$ARGV[0]";
+open IN,"$IN";
+print "----------------------------------------------------\n";
+while (<IN>){
+    if ( (/case .+ in/) || (/;;/) ){
+ 	do {$a=<IN>; chop($a);}until(  ($a=~/esac/)||($a=~/\)/) );
+	if ( ($a!~/esac/)  &&  ($a!~/\s*\*/) ){
+	($opt,$comment)=($a=~/(.+)\s+#\s+(.+)/);
+	$opt=~s/^\s+//;
+	$opt=~s/\)//;
+	printf "  %-20s ... %s\n",$opt,$comment;
+	} # no # means no comment
+    }
+    if (/esac/){break;}
+}
+close IN;
+
+EOF
+}
+### end of include showoptions.pl PERL CODE#############################
+
 #
-VERSION=1509.21.16
+VERSION=1612.20.14
 
 ########  PIDS
 alarm=99999;
@@ -125,6 +125,13 @@ function bm_export_script {
 
 # prerequisite 
 # backup
+
+
+toilet -v
+if [ "$?" != "0" ]; then
+    echo INSTALL toilet
+    exit
+fi
 
 
 #########################################
@@ -188,7 +195,13 @@ function watches {
 #	echo $ht $mt $st
 #	printf "%s\n" $ht
 	printf "%s:%s:%s A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
-	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	#	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+	#ls -1 /usr/share/figlet/*tlf | xargs -I II basename II .tlf | xargs -n 1 -I JJJ toilet -f JJJ JJJ
+
+	
+#	printf "%s:%s:%s" $ht $mt $st | toilet -f mono9 -F border
+	printf "%s:%s:%s" $ht $mt $st | toilet -f mono12
 
 	sleep 1;
 	
@@ -235,7 +248,9 @@ function stopky {
 	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
 
 
-	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+#	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
 
 	sleep 1;
 	
@@ -309,7 +324,10 @@ function countdown {
 	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $h $m $s ;
 #	printf "%02d:%02d:%02d   press SPACE to delay, x to read, q to exit, NOT ctrl-c\n"  $ht $mt $st ;
 
-	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+#	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
 
 	sleep 1;
 	

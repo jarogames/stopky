@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-VERSION=1509.21.16
+VERSION=1612.20.14
 
 ########  PIDS
 alarm=99999;
@@ -12,6 +12,13 @@ wakeat=9876543210
 source bashmagic.func
 # prerequisite 
 # backup
+
+
+toilet -v
+if [ "$?" != "0" ]; then
+    echo INSTALL toilet
+    exit
+fi
 
 
 #########################################
@@ -75,7 +82,13 @@ function watches {
 #	echo $ht $mt $st
 #	printf "%s\n" $ht
 	printf "%s:%s:%s A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
-	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	#	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+	#ls -1 /usr/share/figlet/*tlf | xargs -I II basename II .tlf | xargs -n 1 -I JJJ toilet -f JJJ JJJ
+
+	
+#	printf "%s:%s:%s" $ht $mt $st | toilet -f mono9 -F border
+	printf "%s:%s:%s" $ht $mt $st | toilet -f mono12
 
 	sleep 1;
 	
@@ -122,7 +135,9 @@ function stopky {
 	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
 
 
-	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+#	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
 
 	sleep 1;
 	
@@ -196,7 +211,10 @@ function countdown {
 	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $h $m $s ;
 #	printf "%02d:%02d:%02d   press SPACE to delay, x to read, q to exit, NOT ctrl-c\n"  $ht $mt $st ;
 
-	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+#	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
+
+
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
 
 	sleep 1;
 	
