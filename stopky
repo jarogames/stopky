@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-VERSION=1612.20.14
+VERSION=1612.21.12
 
 ########  PIDS
 alarm=99999;
@@ -63,12 +63,13 @@ function watches {
 	mt=`date +%M`
 	st=`date +%S`
 ############
-	clear;
+#	clear;
 
-	echo -e  "\e[1;33m"
+echo -e  "\e[1;33m"
+	
 	# bold
-	echo -e  "\e[1;33m"
-# bg 	echo -e  "\e[1;41m"
+#	echo -e  "\e[1;33m"
+#### bg 	echo -e  "\e[1;41m"
 	#echo -e "\\033[33m"
 
 	DIFA=999999
@@ -80,15 +81,18 @@ function watches {
 
 #	ht=`date +%H`
 #	echo $ht $mt $st
-#	printf "%s\n" $ht
-	printf "%s:%s:%s A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
+	#	printf "%s\n" $ht
+	#clear 00	echo -e "\033[2J"
+	echo -e "\033[0;0f"
+	
+	printf "%s:%s:%s A!/$DIFA/   NO ctrl-c\n"  $ht $mt $st ;
 
 	#	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
 	#ls -1 /usr/share/figlet/*tlf | xargs -I II basename II .tlf | xargs -n 1 -I JJJ toilet -f JJJ JJJ
 
 	
 #	printf "%s:%s:%s" $ht $mt $st | toilet -f mono9 -F border
-	printf "%s:%s:%s" $ht $mt $st | toilet -f mono12
+	printf "%s:%s:%s\n" $ht $mt $st | toilet -f mono12
 
 	sleep 1;
 	
@@ -123,7 +127,9 @@ function stopky {
 	mt=`expr $mt % 60`;
 	ht=`expr $dstot / 3600`; 
 	st=`expr $dstot % 60`;
-	clear;
+
+	#clear;
+	echo -e "\033[0;0f"
 	echo -e  "\e[1;35m"
 
 	DIFA=999999
@@ -132,7 +138,7 @@ function stopky {
 	    DIFA=$(( $wakeat - $secnow ))
 #	    printf "alarm trigs in $dif sec\n"
 	fi
-	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, x:read, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
+	printf "%02d:%02d:%02d A!/$DIFA/  SPACE:delay, (q)uit, NO ctrl-c\n"  $ht $mt $st ;
 
 
 #	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
