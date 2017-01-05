@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-VERSION=1612.21.12
+VERSION=1701.05.16
 
 ########  PIDS
 alarm=99999;
@@ -14,7 +14,7 @@ source bashmagic.func
 # backup
 
 
-toilet -v
+toilet -v >/dev/null
 if [ "$?" != "0" ]; then
     echo INSTALL toilet
     exit
@@ -85,7 +85,7 @@ echo -e  "\e[1;33m"
 	#clear 00	echo -e "\033[2J"
 	echo -e "\033[0;0f"
 	
-	printf "%s:%s:%s A!/$DIFA/   NO ctrl-c\n"  $ht $mt $st ;
+#	printf "%s:%s:%s A!/$DIFA/   NO ctrl-c\n"  $ht $mt $st ;
 
 	#	printf "%s:%s:%s" $ht $mt $st | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
 	#ls -1 /usr/share/figlet/*tlf | xargs -I II basename II .tlf | xargs -n 1 -I JJJ toilet -f JJJ JJJ
