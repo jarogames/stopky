@@ -92,7 +92,7 @@ echo -e  "\e[1;33m"
 
 	
 #	printf "%s:%s:%s" $ht $mt $st | toilet -f mono9 -F border
-	printf "%s:%s:%s\n" $ht $mt $st | toilet -f mono12
+	printf "%s:%s:%s\n" $ht $mt $st | toilet -f mono9
 
 	sleep 1;
 	
@@ -143,7 +143,7 @@ function stopky {
 
 #	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
 
-	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono9
 
 	sleep 1;
 	
@@ -220,7 +220,7 @@ function countdown {
 #	printf "%02d:%02d:%02d" $h $m $s | $HOME/00_central/apps/08_figlet/figlet   -d $HOME/00_central/apps/08_figlet/fonts -f roman;
 
 
-	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono12
+	printf "%02d:%02d:%02d" $h $m $s | toilet -f mono9
 
 	sleep 1;
 	
